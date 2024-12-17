@@ -1,24 +1,60 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PizzaCat</title>
+    <title>Онлайн-магазин</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gothic+A1&family=Shantell+Sans:ital,wght@0,300..800;1,300..800&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div>
-        <nav>
-            <ul>
-                <li><a href="#about">О нас</a></li>
-                <li><a href="#menu">Меню</a></li>
-                <li><a href="#feedBack">Обратная связь</a></li>
-                <li><a href="#collaborating">Сотрудничество</a></li>
-            </ul>
-        </nav>
+
+<header>
+    <h1>Онлайн-магазин</h1>
+</header>
+
+<div class="container">
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="Поиск товара">
+        <select id="category">
+            <option value="all">Все категории</option>
+            <option value="electronics">Электроника</option>
+            <option value="clothes">Одежда</option>
+            <option value="books">Книги</option>
+        </select>
+        <button id="filter-btn">Применить</button>
     </div>
+
+    <div class="product-list" id="product-list">
+        <!-- Карточки товаров -->
+        <div class="product-card" data-category="electronics">
+            <img src="/images/black11_5-Photoroom.png" alt="Товар 1" height="150px !importent">
+            <h3>Смартфон</h3>
+            <p><strong>Цена: 20000 ₽</strong></p>
+            <button data-name="Смартфон" data-price="20000">Добавить в корзину</button>
+        </div>
+        <div class="product-card" data-category="clothes">
+            <img src="/images/item-3479cf30-f8cc-4b59-915a-c6b222b94b91-Photoroom.png" alt="Товар 2">
+            <h3>Куртка</h3>
+            <p><strong>Цена: 5000 ₽</strong></p>
+            <button data-name="Куртка" data-price="5000">Добавить в корзину</button>
+        </div>
+        <div class="product-card" data-category="books">
+            <img src="/images/Death_Note,_Book.svg.png" alt="Товар 3">
+            <h3>Книга</h3>
+            <p><strong>Цена: 800 ₽</strong></p>
+            <button data-name="Книга" data-price="800">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <!-- Корзина -->
+    <div class="cart-container">
+        <h2>Корзина</h2>
+        <div id="cart"></div>
+        <div class="cart-summary" id="cart-summary">Итоговая сумма: 0 ₽</div>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
