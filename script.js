@@ -1,168 +1,213 @@
-document.addEventListener('DOMContentLoaded', () => {
+
+document.addEventListener('DOMContentLoaded', function () {
+    const productList = document.getElementById('product-list');
     const searchInput = document.getElementById('search');
     const categorySelect = document.getElementById('category');
-    const productList = document.getElementById('product-list');
+    const filterBtn = document.getElementById('filter-btn');
+    const cartContainer = document.getElementById('cart');
+    const cartSummary = document.getElementById('cart-summary');
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+     let isCartVisible = false;
+     const modalContainer = document.getElementById('modal-container');
+     const modalContentInner = document.getElementById('modal-content-inner');
+     const closeButton = document.querySelector('.close-modal');
+    const feedbackForm = document.querySelector('.feedback-form form');
+    const viewCartLink = document.getElementById('view-cart');
 
-    // Функция для фильтрации товаров
-    const filterProducts = () => {
+
+     const products = {
+        1: {
+          name: 'Смартфон',
+          price: 20000,
+          description: 'Современный смартфон с отличной камерой и производительностью.',
+          stars: 4,
+           image: '/images/black11_5-Photoroom.png',
+        },
+        2: {
+          name: 'Куртка',
+          price: 5000,
+          description: 'Стильная и теплая куртка для прохладной погоды.',
+          stars: 5,
+            image: '/images/item-3479cf30-f8cc-4b59-915a-c6b222b94b91-Photoroom.png',
+
+        },
+        3: {
+          name: 'Книга',
+          price: 800,
+          description: 'Интересная книга для увлекательного чтения.',
+          stars: 3,
+            image: '/images/Death_Note,_Book.svg.png',
+        },
+    };
+
+
+
+    function updateCartDisplay() {
+        if (!cartContainer) return;
+
+        cartContainer.innerHTML = '';
+        let total = 0;
+
+        cart.forEach(item => {
+            const cartItem = document.createElement('div');
+            cartItem.classList.add('cart-item');
+            cartItem.innerHTML = `
+                <p>${item.name} - ${item.price} ₽</p>
+                <button class="remove-item" data-name="${item.name}">Удалить</button>
+            `;
+            cartContainer.appendChild(cartItem);
+            total += item.price;
+        });
+
+        if (cartSummary) {
+            cartSummary.textContent = `Итоговая сумма: ${total} ₽`;
+        }
+
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', function() {
+                 const itemName = this.getAttribute('data-name');
+                 cart = cart.filter(item => item.name !== itemName);
+                 localStorage.setItem('cart', JSON.stringify(cart));
+                 updateCartDisplay();
+             });
+         });
+           localStorage.setItem('cart', JSON.stringify(cart));
+
+        updateCartIcon();
+    }
+
+     if(productList){
+         productList.addEventListener('click', function(event) {
+            if(event.target.classList.contains('view-details-btn')){
+                 const productId = event.target.getAttribute('data-id');
+                 showModal(productId);
+            }
+         });
+     }
+
+    function updateCartIcon() {
+         if(viewCartLink) {
+             if (cart.length > 0) {
+                viewCartLink.textContent = `🛒(${cart.length})`;
+             } else {
+                viewCartLink.textContent = '🛒';
+             }
+         }
+
+    }
+
+    function filterProducts() {
         const searchTerm = searchInput.value.toLowerCase();
-        const selectedCategory = categorySelect.value;
+        const category = categorySelect.value;
 
         document.querySelectorAll('.product-card').forEach(card => {
-            const productName = card.querySelector('h3').textContent.toLowerCase();
-            const productCategory = card.getAttribute('data-category');
+            const cardCategory = card.getAttribute('data-category');
+            const cardTitle = card.querySelector('h3').textContent.toLowerCase();
 
-            const matchesSearch = productName.includes(searchTerm);
-            const matchesCategory = selectedCategory === 'all' || selectedCategory === productCategory;
+            const matchesCategory = category === 'all' || cardCategory === category;
+            const matchesSearch = cardTitle.includes(searchTerm);
 
-            if (matchesSearch && matchesCategory) {
+            if (matchesCategory && matchesSearch) {
                 card.style.display = 'block';
             } else {
                 card.style.display = 'none';
             }
         });
-    };
-
-    // Обработчики событий для поиска и фильтрации
-    searchInput.addEventListener('input', filterProducts);
-    categorySelect.addEventListener('change', filterProducts);
-
-    // Обработчик для открытия карточки товара
-    productList.addEventListener('click', (event) => {
-        if (event.target.tagName === 'BUTTON') {
-            const button = event.target;
-            const productCard = button.closest('.product-card');
-
-            const productName = productCard.querySelector('h3').textContent;
-            const productPrice = productCard.querySelector('p strong').textContent;
-            const productImage = productCard.querySelector('img').src;
-
-            openProductModal(productName, productPrice, productImage);
-        }
-    });
-
-    // Функция для отображения модального окна с информацией о товаре
-    const openProductModal = (name, price, image) => {
-        // Создаем модальное окно
-        const modal = document.createElement('div');
-        modal.classList.add('modal');
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-        modal.style.zIndex = '1000';
-
-        modal.innerHTML = `
-            <div class="modal-content" style="background: white; padding: 20px; border-radius: 10px; width: 400px; text-align: center;">
-                <span class="close-button" style="cursor: pointer; font-size: 20px; position: absolute; top: 10px; right: 20px;">&times;</span>
-                <img src="${image}" alt="${name}" style="max-width: 100%; height: auto; border-radius: 5px; margin-bottom: 20px;">
-                <h2>${name}</h2>
-                <p>${price}</p>
-                <button class="add-to-cart" data-name="${name}" data-price="${price.replace(/[^0-9]/g, '')}" style="padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Добавить в корзину</button>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Обработчик для закрытия модального окна
-        modal.querySelector('.close-button').addEventListener('click', () => {
-            modal.remove();
-        });
-
-        // Обработчик для добавления товара в корзину из модального окна
-        modal.querySelector('.add-to-cart').addEventListener('click', (event) => {
-            const button = event.target;
-            const productName = button.getAttribute('data-name');
-            const productPrice = parseFloat(button.getAttribute('data-price'));
-            addToCart(productName, productPrice);
-            modal.remove();
-        });
-    };
-
-    // Корзина
-    const cart = document.getElementById('cart');
-    const cartSummary = document.getElementById('cart-summary');
-    const cartItems = {};
-
-    const addToCart = (name, price) => {
-        if (!cartItems[name]) {
-            cartItems[name] = { price, quantity: 0 };
-        }
-        cartItems[name].quantity++;
-        renderCart();
-    };
-
-    const renderCart = () => {
-        cart.innerHTML = '';
-        let total = 0;
-
-        for (const [name, { price, quantity }] of Object.entries(cartItems)) {
-            const item = document.createElement('div');
-            item.classList.add('cart-item');
-
-            const itemName = document.createElement('span');
-            itemName.textContent = `${name} (${quantity})`;
-
-            const itemPrice = document.createElement('span');
-            itemPrice.textContent = `${price * quantity} ₽`;
-
-            const removeButton = document.createElement('button');
-            removeButton.textContent = 'Удалить';
-            removeButton.addEventListener('click', () => {
-                delete cartItems[name];
-                renderCart();
-            });
-
-            item.appendChild(itemName);
-            item.appendChild(itemPrice);
-            item.appendChild(removeButton);
-
-            cart.appendChild(item);
-            total += price * quantity;
-        }
-
-        cartSummary.textContent = `Итоговая сумма: ${total} ₽`;
-    };
-
-    // Инициализация фильтрации при загрузке
-    filterProducts();
-
-    // Добавление формы обратной связи
-    const container = document.querySelector('.container');
-    const form = document.createElement('div');
-    container.appendChild(form);
-});
-document.getElementById('submit').addEventListener('click', (event) => {
-    event.preventDefault(); // Предотвращает отправку формы
-    
-    // Получаем значения полей
-    const name = document.getElementById('name').value.trim();
-    const message = document.getElementById('message').value.trim();
-    const email = document.getElementById('email').value.trim();
-    
-    // Проверяем, чтобы поля были заполнены
-    if (!name) {
-        alert('Пожалуйста, введите ваше имя.');
-        return;
     }
-    
-    if (!email) {
-        alert('Пожалуйста, введите ваш email.');
-        return;
+    if (filterBtn){
+         filterBtn.addEventListener('click', filterProducts);
     }
-    
-    if (!message) {
-        alert('Пожалуйста, введите сообщение.');
-        return;
+    if (searchInput){
+         searchInput.addEventListener('input', filterProducts);
     }
-    
-    // Если все поля заполнены, показываем сообщение об успешной отправке
-    alert('Жалоба отправлена!');
+    if (categorySelect){
+         categorySelect.addEventListener('change', filterProducts);
+    }
+
+    if(themeToggle) {
+        themeToggle.addEventListener('click', function() {
+           body.classList.toggle('dark-mode');
+           themeToggle.textContent = body.classList.contains('dark-mode') ? '🌙' : '☀️';
+         });
+    }
+
+
+    if (feedbackForm){
+       feedbackForm.addEventListener('submit', function(event) {
+           event.preventDefault();
+           const name = document.getElementById('name').value;
+           const email = document.getElementById('email').value;
+           const message = document.getElementById('message').value;
+
+           alert(`Сообщение от ${name} (${email}):\n\n${message}`);
+         });
+    }
+   if(cartContainer){
+     updateCartDisplay();
+   }
+
+    updateCartIcon();
+
+     if (viewCartLink) {
+          viewCartLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            isCartVisible = !isCartVisible;
+               if(window.location.pathname === '/index.html' || window.location.pathname === '/'){
+                  if(isCartVisible){
+                       window.location.href = 'cart.html'
+                 }
+              }
+           });
+       }
+  function showModal(productId){
+        const product = products[productId];
+         if(!product) return;
+
+           const stars = '⭐'.repeat(product.stars);
+
+          modalContentInner.innerHTML = `
+             <img src="${product.image}" alt="${product.name}" style="max-width: 100%; height: auto;">
+              <h2>${product.name}</h2>
+              <p><strong>Цена:</strong> ${product.price} ₽</p>
+              <p><strong>Описание:</strong> ${product.description}</p>
+              <p><strong>Рейтинг:</strong> ${stars}</p>
+              <button class="add-to-cart-btn" data-name="${product.name}" data-price="${product.price}">Добавить в корзину</button>
+
+           `;
+
+          modalContainer.style.display = 'block';
+  }
+
+
+    function hideModal(){
+          modalContainer.style.display = 'none';
+    }
+
+
+     closeButton.addEventListener('click', hideModal);
+
+       modalContainer.addEventListener('click', function(event) {
+           if (event.target === modalContainer) {
+                 hideModal();
+          }
+      });
+
+
+        modalContentInner.addEventListener('click', function(event) {
+              if (event.target.classList.contains('add-to-cart-btn')) {
+                const itemName = event.target.getAttribute('data-name');
+                const itemPrice = parseInt(event.target.getAttribute('data-price'));
+                cart.push({ name: itemName, price: itemPrice });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                 updateCartDisplay();
+                  updateCartIcon();
+                 hideModal();
+              }
+         });
+
 });
 document.addEventListener('DOMContentLoaded', () => {
     const themeToggleBtn = document.getElementById('theme-toggle');
@@ -185,7 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
         body.classList.add('light-theme');
         themeToggleBtn.textContent = ('☀️');
         themeToggleBtn.classList.replace('btn-outline-dark', 'btn-outline-light');
+        modalContainer {
+        
+        }
       }
     });
   });
-
