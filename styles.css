@@ -132,3 +132,37 @@ header h1 {
     font-size: 18px;
     font-weight: bold;
 }
+
+        body.light-theme {
+          background-color: #ffffff;
+          color: #000000;
+        }
+      
+        body.dark-theme {
+          background-color: #000000;
+          color: #ffffff;
+          nav {
+            border-bottom: 4px solid #b87700 !important;
+            }
+            .results img {
+                border: 2px solid white;
+            }
+
+            footer {
+                background-color: #4700b82f !important;
+            }
+            div {
+                background-color: #0f0f0f0f !important;
+            }
+            p {
+                color: #808080 !important;
+            }
+            button {
+                background-color: red;
+            }
+        }
+
+        #theme-toggle {
+            border: 0 !important;
+        }
+    
