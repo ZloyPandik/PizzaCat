@@ -54,7 +54,23 @@
         <div id="cart"></div>
         <div class="cart-summary" id="cart-summary">Итоговая сумма: 0 ₽</div>
     </div>
+    <div class="feedback-form" style="margin-top: 40px; padding: 20px; border-top: 1px solid #ddd;">
+        <h2>Свяжитесь с нами</h2>
+        <form>
+            <label for="name">Ваше имя:</label>
+            <input type="text" id="name" name="name" placeholder="Введите ваше имя" required style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;">
+
+            <label for="email">Ваш email:</label>
+            <input type="email" id="email" name="email" placeholder="Введите ваш email" required style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;">
+
+            <label for="message">Сообщение:</label>
+            <textarea id="message" name="message" placeholder="Введите ваше сообщение" rows="5" required style="display: block; width: 100%; margin-bottom: 10px; padding: 10px;"></textarea>
+
+            <button type="submit" id="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Отправить</button>
+        </form>
+    </div>
 </div>
+
 
 <script src="script.js"></script>
 </body>
